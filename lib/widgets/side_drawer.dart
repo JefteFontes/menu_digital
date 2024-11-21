@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:menu_digital/screens/info_screen.dart';
+import 'package:menu_digital/screens/menu_screen.dart';
 
 class SideDrawer extends StatelessWidget {
   const SideDrawer ({super.key});
@@ -46,7 +48,13 @@ class SideDrawer extends StatelessWidget {
                     fontSize: 18,
                   ),
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const MenuScreen(),
+                    ),
+                  );
+                },
               ),
               ListTile(
                 leading: Icon(
@@ -61,7 +69,13 @@ class SideDrawer extends StatelessWidget {
                     fontSize: 18,
                   ),
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const InfoScreen(),
+                    ),
+                  );
+                },
               )
             ],
           )
