@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "631618245831",
+    "firebase_url": "https://avali-app-menudigital-default-rtdb.firebaseio.com",
+    "project_id": "avali-app-menudigital",
+    "storage_bucket": "avali-app-menudigital.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631618245831:android:6472b51c5a1c9a5c7fdae2",
+        "android_client_info": {
+          "package_name": "com.example.menu_digital"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "631618245831-nunrctjknnmodj806os6i7r3o928edlq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.menu_digital",
+            "certificate_hash": "6d710a16245fd0fa905d12f1d063991736745b6a"
+          }
+        },
+        {
+          "client_id": "631618245831-kqpckllqjhegktdl2j0lc4b70iun669u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAK-DGFLcye6yvPMarq0RxB_oGx6n9Re3s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "631618245831-kqpckllqjhegktdl2j0lc4b70iun669u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

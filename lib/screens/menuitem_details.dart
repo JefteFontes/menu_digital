@@ -3,7 +3,7 @@ import 'package:menu_digital/data/menu_digital_data.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MenuItemDetails extends StatelessWidget {
-  const MenuItemDetails({
+  const MenuItemDetails({ 
     super.key,
     required this.item,
     required this.onRealizeOrder
