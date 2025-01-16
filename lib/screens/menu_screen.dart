@@ -41,6 +41,12 @@ class _MenuScreenState extends State<MenuScreen> {
     }
   }
 
+  void _clearOrders() {
+    setState(() {
+      _ordersMenuItems.clear();
+    });
+  }
+
   void _pageSelect(int index) {
     setState(() {
       _pageSelectedIndex = index;
@@ -55,7 +61,10 @@ class _MenuScreenState extends State<MenuScreen> {
     var pageSelectedTitle = 'Principal';
     
     if (_pageSelectedIndex == 1) {
-      pageSelected = const OrdersScreen();
+      pageSelected = OrdersScreen(
+        orders: _ordersMenuItems,
+        onClearOrders: _clearOrders,
+      );
       pageSelectedTitle = 'Pedidos';
     }
 

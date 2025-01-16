@@ -37,7 +37,7 @@ class InfoScreen extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              'João Vitor Terto e Jefté Fontes de Araújo',
+              'João Victor Rodrigues Terto e Jefté Fontes de Araújo',
               style: TextStyle(fontSize: 16),
             )
           ],
