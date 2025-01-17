@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:menu_digital/data/menu_digital_data.dart';
+import 'package:menu_digital/providers/order_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OrdersItemCard extends StatelessWidget {
+
+class OrdersItemCard extends ConsumerWidget {
   const OrdersItemCard({
     super.key,
     required this.item,
@@ -17,7 +20,7 @@ class OrdersItemCard extends StatelessWidget {
 
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       leading: Image.asset(
         item.imageMenu, 
@@ -38,6 +41,11 @@ class OrdersItemCard extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: onIcrementQuantity,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: () => ref.read(orderProvider.notifier).addOrder(item),
+            tooltip: 'Remover item',
           ),
         ],
       )

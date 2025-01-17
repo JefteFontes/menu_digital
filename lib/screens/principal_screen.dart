@@ -7,10 +7,8 @@ import 'package:menu_digital/widgets/restaurant_card.dart';
 class PrincipalScreen extends StatelessWidget {
   const PrincipalScreen({
     super.key,
-    required this.onRealizeOrder
   });
 
-  final void Function(MenuItem order) onRealizeOrder;
   
   @override
   Widget build(BuildContext context) {
@@ -38,7 +36,6 @@ class PrincipalScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => CardapioScreen(
                       restaurant: restaurant,
-                      onRealizeOrder: onRealizeOrder,
                     )
                   )
                 );

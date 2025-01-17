@@ -23,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
+
   //validação para a senha
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
@@ -42,7 +43,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
-  // aqui eu não sei se presta, não roda no meu faz o teste.
   void _register() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {

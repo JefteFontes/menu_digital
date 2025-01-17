@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:menu_digital/data/menu_digital_data.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:menu_digital/providers/order_provider.dart';
 
-class MenuItemDetails extends StatelessWidget {
+class MenuItemDetails extends ConsumerWidget {
   const MenuItemDetails({ 
     super.key,
     required this.item,
-    required this.onRealizeOrder
   });
 
   final MenuItem item;
-  final void Function(MenuItem order) onRealizeOrder;
+
+  
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(orderProvider); 
+
     Widget content = Stack(
       children: [
         SingleChildScrollView(
@@ -61,7 +65,14 @@ class MenuItemDetails extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: ElevatedButton(
               onPressed: () {
-                onRealizeOrder(item);
+                ref.read(orderProvider.notifier).addOrder(item);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(!state.contains(item) ? '${item.title} adicionado ao pedido!' : '${item.title} removido do pedido!'),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
               }, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
@@ -71,7 +82,7 @@ class MenuItemDetails extends StatelessWidget {
                 ),
                 minimumSize: const Size(200, 50)
               ),
-              child: const Text('Realizar pedido', style: TextStyle(fontSize: 16)),
+              child: Text(!state.contains(item) ? 'Realizar pedido' : 'Desfazer pedido', style: TextStyle(fontSize: 16)),
             ),
           ),
         )

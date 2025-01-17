@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:menu_digital/screens/info_screen.dart';
+import 'package:menu_digital/screens/login_screen.dart';
 import 'package:menu_digital/screens/menu_screen.dart';
 
 class SideDrawer extends StatelessWidget {
   const SideDrawer ({super.key});
+
+  void logout(BuildContext context) async {
+    try {
+      FirebaseAuth.instance.signOut();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Erro ao fazer logout: $e'),
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +88,22 @@ class SideDrawer extends StatelessWidget {
                     ),
                   );
                 },
-              )
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.logout,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                title: Text(
+                  'Sair',
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color:Theme.of(context).colorScheme.onSurface,
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () => logout(context),
+              ),
             ],
           )
         ],

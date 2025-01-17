@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'register_screen.dart'; // Importa a tela de registro
+import 'register_screen.dart'; 
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -11,6 +12,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: '631618245831-kqpckllqjhegktdl2j0lc4b70iun669u.apps.googleusercontent.com',
+  );
 
   //validação do e-mail
   String? _validateEmail(String? value) {
@@ -51,6 +56,35 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(content: Text(e.message ?? 'Erro ao realizar login')),
         );
       }
+    }
+  }
+
+  void _loginWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        return;
+      }
+
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login efetuado com sucesso!')),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? 'Erro ao realizar login')),
+      );
     }
   }
 
@@ -140,6 +174,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text('Entrar'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 245, 102, 6),
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                //botão de entrar com google
+                ElevatedButton(
+                  onPressed: _loginWithGoogle,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.login, color: Colors.white),
+                      SizedBox(width: 8.0),
+                      Text('Entrar com Google'),
+                    ],
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
                     padding: EdgeInsets.symmetric(vertical: 16.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),

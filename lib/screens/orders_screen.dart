@@ -1,87 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:menu_digital/data/menu_digital_data.dart';
+import 'package:menu_digital/providers/order_provider.dart';
 import 'package:menu_digital/widgets/orders_item_card.dart';
 
-class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({
-    super.key,
-    required this.orders,
-    required this.onClearOrders,
-  });
-
-  final List<MenuItem> orders;
-  final void Function() onClearOrders;
+class OrdersScreen extends ConsumerStatefulWidget {
+  const OrdersScreen({super.key});
 
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
+  ConsumerState<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen> {
+class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   final Map<MenuItem, int> _orderQuantities = {};
 
   @override
   void initState() {
-    super.initState(); 
-    for (var order in widget.orders) {
+    super.initState();
+    final orders = ref.read(orderProvider);  // Leitura do estado atual dos pedidos
+    for (var order in orders) {
       _orderQuantities[order] = 1;
     }
   }
+
   double _calculateTotalPrice() {
-    return _orderQuantities.entries.map((entry) => entry.key.price * entry.value).fold(0.0, (prev, ammount) => prev + ammount);
-  }
-  void _incrementQuantity(int quantity, MenuItem menuItem) {
-    setState(() {
-      _orderQuantities[menuItem] = quantity + 1;
-    });
-  }
-  void _decrementQuantity(int quantity, MenuItem menuItem) {
-    if (quantity > 1) {
-      setState(() {
-        _orderQuantities[menuItem] = quantity - 1;
-      });
-    }
+    return ref.read(orderProvider.notifier).calculateTotalPrice(_orderQuantities);
   }
 
-  void _sendOrder() {
-    if (widget.orders.isEmpty) {
+  void _incrementQuantity(MenuItem item) {
+    setState(() {
+      _orderQuantities[item] = (_orderQuantities[item] ?? 1) + 1;
+    });
+  }
+
+  void _decrementQuantity(MenuItem item) {
+    setState(() {
+      final currentQuantity = _orderQuantities[item] ?? 1;
+      if (currentQuantity > 1) {
+        _orderQuantities[item] = currentQuantity - 1;
+      }
+    });
+  }
+
+  void _sendOrder() async {
+    try {
+      ref.read(orderProvider.notifier).sendOrder(_orderQuantities);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Nenhum pedido realizado.'),
+          content: Text('Pedido enviado com sucesso!'),
           duration: Duration(seconds: 2),
         ),
       );
-      return;
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao enviar pedido: $error'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
-
-    widget.onClearOrders();
-    _calculateTotalPrice();
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Pedido enviado com sucesso!'),
-        duration: Duration(seconds: 2),
-      ),
-    );
   }
+
   @override
   Widget build(BuildContext context) {
+    final orders = ref.watch(orderProvider);  // Observe as mudanças no estado dos pedidos
+
     return Column(
       children: [
         Expanded(
-          child: widget.orders.isEmpty ? const Center(child: Text('Nenhum pedido realizado.')) : ListView.builder(
-            itemCount: widget.orders.length,
-            itemBuilder: (context, index) {
-              MenuItem item = widget.orders[index];
-              int quantity = _orderQuantities[widget.orders[index]] ?? 1;
+          child: orders.isEmpty
+              ? const Center(child: Text('Nenhum pedido realizado.'))
+              : ListView.builder(
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    final item = orders[index];
+                    final quantity = _orderQuantities[item] ?? 1;
 
-              return OrdersItemCard(
-                item: item, 
-                quantity: quantity,
-                onIcrementQuantity: () => _incrementQuantity(quantity, item),
-                onDecrementQuantity: () => _decrementQuantity(quantity, item),
-              );
-            }
-          ),
+                    return OrdersItemCard(
+                      item: item,
+                      quantity: quantity,
+                      onIcrementQuantity: () => _incrementQuantity(item),
+                      onDecrementQuantity: () => _decrementQuantity(item),
+                    );
+                  },
+                ),
         ),
         Padding(
           padding: const EdgeInsets.all(20.0),

@@ -8,11 +8,9 @@ class CardapioScreen extends StatelessWidget {
   const CardapioScreen({
     super.key,
     required this.restaurant,
-    required this.onRealizeOrder
   });
 
   final Restaurant restaurant;
-  final void Function(MenuItem order) onRealizeOrder;
 
   
   Widget _buildCardapioItems(BuildContext context) {
@@ -100,7 +98,6 @@ class CardapioScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => MenuItemDetails(
                       item: restaurant.menuItems[index],
-                      onRealizeOrder: onRealizeOrder,
                     )
                   )
                 ) ,
