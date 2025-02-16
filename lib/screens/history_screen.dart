@@ -13,8 +13,6 @@ class HistoryScreen extends ConsumerWidget {
     final historyAsyncValue = ref.watch(historyProvider);
     final user = FirebaseAuth.instance.currentUser;
 
-    
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Histórico de Pedidos'),

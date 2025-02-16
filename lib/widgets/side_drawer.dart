@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:menu_digital/screens/info_screen.dart';
-import 'package:menu_digital/screens/login_screen.dart';
 import 'package:menu_digital/screens/menu_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:menu_digital/providers/history_provider.dart';
 
-class SideDrawer extends StatelessWidget {
+class SideDrawer extends ConsumerWidget {
   const SideDrawer ({super.key});
 
-  void logout(BuildContext context) async {
-    try {
-      FirebaseAuth.instance.signOut();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Erro ao fazer logout: $e'),
-      ));
-    }
+  void logout(BuildContext context, WidgetRef ref) async {
+  try {
+    await FirebaseAuth.instance.signOut(); // Aguarda a conclusão do logout
+    ref.invalidate(historyProvider); // Invalida o histórico para evitar dados do usuário anterior
+
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Erro ao fazer logout: $e')),
+    );
   }
+}
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Drawer(
       child: ListView(
         children: [
@@ -102,7 +105,7 @@ class SideDrawer extends StatelessWidget {
                     fontSize: 18,
                   ),
                 ),
-                onTap: () => logout(context),
+                onTap: () => logout(context, ref),
               ),
             ],
           )

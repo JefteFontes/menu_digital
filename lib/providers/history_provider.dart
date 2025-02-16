@@ -4,38 +4,35 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 
-final historyProvider = FutureProvider<List<Order>>((ref) async {
-  final url = Uri.https('avali-app-menudigital-default-rtdb.firebaseio.com', 'orders.json');
+final historyProvider = StreamProvider<List<Order>>((ref) {
   final userId = FirebaseAuth.instance.currentUser?.uid;
+  if (userId == null) {
+    return Stream.value([]); // Retorna uma stream vazia caso o usuário não esteja logado
+  }
 
-  try {
+  final url = Uri.https(
+    'avali-app-menudigital-default-rtdb.firebaseio.com',
+    'orders.json',
+  );
+
+  return Stream.periodic(const Duration(seconds: 5)).asyncMap((_) async {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>?;
 
-      if (data == null) {
-        return [];
-      }
+      if (data == null) return [];
 
       final orders = data.entries
-          .where((entry) {
-            final orderData = entry.value as Map<String, dynamic>;
-            return orderData['userId'] == userId; // Filtra os pedidos do usuário atual
-          })
-          .map((entry) {
-            final orderData = entry.value as Map<String, dynamic>;
-            return Order.fromJson(orderData);
-          })
+          .where((entry) => entry.value['userId'] == userId)
+          .map((entry) => Order.fromJson(entry.value))
           .toList();
 
       return orders;
     } else {
       throw Exception('Erro ao carregar histórico.');
     }
-  } catch (error) {
-    throw Exception('Erro ao carregar histórico: $error');
-  }
+  });
 });
 
 class Order {

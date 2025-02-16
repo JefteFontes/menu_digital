@@ -36,7 +36,7 @@ class OrderNotifier extends StateNotifier<List<MenuItem>> {
   
 
   
-  void sendOrder(Map<MenuItem, int> quantities) async {
+  Future<void> sendOrder(Map<MenuItem, int> quantities) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) {
       throw Exception("Usuário não autenticado.");
@@ -48,7 +48,7 @@ class OrderNotifier extends StateNotifier<List<MenuItem>> {
 
     final orderData = {
       "userId": userId,
-      "items": state.map((item) {
+      "items": state.map((item) { 
         return {
           "id": item.id,
           "title": item.title,

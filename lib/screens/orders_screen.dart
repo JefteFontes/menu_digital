@@ -17,10 +17,14 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   @override
   void initState() {
     super.initState();
-    final orders = ref.read(orderProvider);  // Leitura do estado atual dos pedidos
-    for (var order in orders) {
-      _orderQuantities[order] = 1;
-    }
+    Future.microtask(() {
+      final orders = ref.read(orderProvider);
+      setState(() {
+        for (var order in orders) {
+          _orderQuantities[order] = 1;
+        }
+      });
+    });
   }
 
   double _calculateTotalPrice() {
@@ -43,14 +47,28 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   }
 
   void _sendOrder() async {
+    final orders = ref.read(orderProvider);
+    if (orders.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nenhum pedido realizado!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
     try {
-      ref.read(orderProvider.notifier).sendOrder(_orderQuantities);
+      await ref.read(orderProvider.notifier).sendOrder(_orderQuantities);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Pedido enviado com sucesso!'),
           duration: Duration(seconds: 2),
         ),
       );
+      setState(() {
+        _orderQuantities.clear();
+      });
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -63,7 +81,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final orders = ref.watch(orderProvider);  // Observe as mudanças no estado dos pedidos
+    final orders = ref.watch(orderProvider); 
 
     return Column(
       children: [
