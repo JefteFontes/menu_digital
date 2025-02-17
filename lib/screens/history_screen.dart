@@ -3,13 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:menu_digital/providers/history_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class HistoryScreen extends ConsumerWidget {
+class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({
     super.key
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _HistoryScreenState createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => ref.refresh(historyProvider));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final historyAsyncValue = ref.watch(historyProvider);
     final user = FirebaseAuth.instance.currentUser;
 

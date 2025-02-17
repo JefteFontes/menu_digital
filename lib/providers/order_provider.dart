@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:menu_digital/data/menu_digital_data.dart';
-
+import 'package:menu_digital/services/notification_service.dart';
 
 final orderProvider = StateNotifierProvider<OrderNotifier, List<MenuItem>>((ref) {
   return OrderNotifier();
@@ -21,7 +21,6 @@ class OrderNotifier extends StateNotifier<List<MenuItem>> {
       state = state.where((menuItem) => menuItem != item).toList();
     }
   }
-
   
   void clearOrders() {
     state = [];
@@ -72,6 +71,15 @@ class OrderNotifier extends StateNotifier<List<MenuItem>> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         clearOrders();
+        NotificationService().showNotification(
+          notification: Notification(
+            id: 0,
+            title: "Pedido finalizado",
+            body: "Seu pedido foi finalizado com sucesso, pode retirar no estabelecimento!",
+            payload: "pedido_finalizado",
+          ),
+          delay: const Duration(seconds: 5),
+        );
         print("Pedido enviado com sucesso!");
       } else {
         throw Exception("Erro ao enviar pedido");

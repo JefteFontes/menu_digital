@@ -34,7 +34,7 @@ class _CardapioScreenState extends ConsumerState<CardapioScreen> {
     }
   }
 
-  void _submitReview() {
+  void _submitReview() async {
     if (reviewController.text.isEmpty) return;
 
     final commentNotifier = ref.read(commentProvider.notifier);
@@ -44,13 +44,43 @@ class _CardapioScreenState extends ConsumerState<CardapioScreen> {
       text: reviewController.text,
       imageUrl: imageFile?.path ?? '',
       date: DateTime.now(),
+      idRestaurant: widget.restaurant.id,
     );
 
-    commentNotifier.addComment(newComment);
+    await commentNotifier.addComment(newComment);
     reviewController.clear();
     setState(() {
       imageFile = null;
     });
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(10),
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera),
+              title: const Text("Tirar Foto"),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image),
+              title: const Text("Escolher da Galeria"),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildCardapioItems(BuildContext context) {
@@ -156,7 +186,7 @@ class _CardapioScreenState extends ConsumerState<CardapioScreen> {
                     if (comments[index].imageUrl?.isNotEmpty ?? false)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Image.file(File(comments[index].imageUrl!), height: double.infinity, width: double.infinity, fit: BoxFit.cover),
+                        child: Image.file(File(comments[index].imageUrl!), height: 300, width: 300, fit: BoxFit.cover),
                       ),
                     Text(comments[index].text),
                   ],
@@ -177,18 +207,10 @@ class _CardapioScreenState extends ConsumerState<CardapioScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => _pickImage(ImageSource.gallery),
-                    child: const Text('Selecionar Imagem'),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => _pickImage(ImageSource.camera),
-                    child: const Text('Tirar Foto'),
-                  ),
-                ],
+              IconButton(
+                onPressed: _showImageSourceDialog,
+                icon: const Icon(Icons.camera_alt),
+                tooltip: 'Escolher imagem',
               ),
               if (imageFile != null)
                 Padding(
@@ -210,6 +232,12 @@ class _CardapioScreenState extends ConsumerState<CardapioScreen> {
         ),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => ref.read(commentProvider.notifier).fetchComments(widget.restaurant.id));
   }
 
   @override

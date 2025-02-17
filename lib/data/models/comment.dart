@@ -4,6 +4,7 @@ class Comment {
   final String text;
   final String? imageUrl;
   final DateTime date;
+  final String? idRestaurant;
 
   Comment({
     required this.id,
@@ -11,6 +12,7 @@ class Comment {
     required this.text,
     this.imageUrl,
     required this.date,
+    this.idRestaurant,
   });
 
   Map<String, dynamic> toJson() {
@@ -19,6 +21,7 @@ class Comment {
       'text': text,
       'imageUrl': imageUrl,
       'date': date.toIso8601String(),
+      'idRestaurant': idRestaurant
     };
   }
 
@@ -29,6 +32,7 @@ class Comment {
       text: json['text'],
       imageUrl: json['imageUrl'],
       date: DateTime.parse(json['date']),
+      idRestaurant: json['idRestaurant'],
     );
   }
 }
